@@ -1,4 +1,4 @@
-# What thit thing do?
+# What this thing do?
 Short answer: scans your network and show results as a table, like this:  
 
 ![image](https://github.com/user-attachments/assets/353c7141-00e6-4715-817a-e9ff00999c01)
