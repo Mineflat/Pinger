@@ -25,7 +25,7 @@ You may use 2 options after CIDR:
 
 # Examples
 ![image](https://github.com/user-attachments/assets/0a12a2b1-3391-4750-a177-4ebcb50225ed)
-![image](https://github.com/user-attachments/assets/34cc4489-8af5-4e86-aeb6-4cd63131a0b5)
+![image](https://github.com/user-attachments/assets/dc80149b-62c8-4167-a45e-4e15050684d6)
 ![image](https://github.com/user-attachments/assets/50800c58-59da-4370-8fb4-b15bfd1ea05f)
 
 **TIP: As you can see, last 2 args may be passed out of order**
