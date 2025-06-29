@@ -9,6 +9,7 @@ namespace Pinger
     internal class TargetHost
     {
         public string IP { get; set; } = string.Empty;
+        public string? Hostname { get; set; } = null;
         public bool ISMP_OK { get; set; } = false;
     }
 }

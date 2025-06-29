@@ -78,51 +78,54 @@ namespace Pinger
             // Возвращаем в виде списка
             return results.ToList();
         }
-
         /// <summary>
         /// Пинг одного хоста с собственным таймаутом-методом.
         /// </summary>
         private static async Task<TargetHost> PingHostAsync(string host, int timeoutMs)
         {
+            // Запускаем пинг
             using var ping = new Ping();
             var pingTask = ping.SendPingAsync(host, timeoutMs);
-            // Задача-таймаут
             var timeoutTask = Task.Delay(timeoutMs);
 
             var finished = await Task.WhenAny(pingTask, timeoutTask);
+            PingReply? reply = null;
+            bool success = false;
+            long delay = timeoutMs;
+
             if (finished == pingTask)
             {
                 try
                 {
-                    var reply = await pingTask; // убедимся, что не упало с исключением
-                    return new TargetHost
-                    {
-                        IP = host,
-                        ISMP_OK = reply.Status == IPStatus.Success
-                    };
+                    reply = await pingTask;
+                    success = reply.Status == IPStatus.Success;
+                    delay = reply.RoundtripTime;
                 }
                 catch (PingException)
                 {
-                    // Если SendPingAsync упал до таймаута
-                    return new TargetHost
-                    {
-                        IP = host,
-                        ISMP_OK = false
-                    };
+                    // считаем, что не ответил
                 }
             }
-            else
+
+            // Пробуем обратный DNS-lookup
+            string hostname;
+            try
             {
-                // Превышен таймаут ожидания самого метода
-                return new TargetHost
-                {
-                    IP = host,
-                    ISMP_OK = false
-                };
+                // Попытаемся получить запись PTR
+                var entry = await Dns.GetHostEntryAsync(host);
+                hostname = entry.HostName;
             }
+            catch
+            {
+                hostname = host; // fallback на IP
+            }
+
+            return new TargetHost
+            {
+                IP = host,
+                Hostname = hostname,
+                ISMP_OK = success
+            };
         }
-
-
-
     }
 }

@@ -9,7 +9,7 @@ namespace Pinger
 {
     internal class ScreenRenderer
     {
-        public static void RenderScreen(List<TargetHost> hosts, bool onlyUP = false, int MaxRowsPerBlock = 30)
+        public static void RenderScreen(List<TargetHost> hosts, bool onlyUP = false, int MaxRowsPerBlock = 30, bool showHostnames = true)
         {
             // Фильтруем, если нужно только «UP»-хосты
             var filtered = onlyUP
@@ -54,7 +54,11 @@ namespace Pinger
                     if (row < chunk.Count)
                     {
                         var h = chunk[row];
-                        var ipText = h.ISMP_OK ? $"[green]{h.IP}[/]" : $"[grey]{h.IP}[/]";
+                        string ipText = string.Empty;
+                        // Логика подставление hostname
+                        if (showHostnames) ipText = h.ISMP_OK ? $"[green]{h.Hostname ?? h.IP}[/]" : $"[grey]{h.Hostname ?? h.IP}[/]";
+                        else  ipText = h.ISMP_OK ? $"[green]{h.IP}[/]" : $"[grey]{h.IP}[/]";
+
                         var statusText = h.ISMP_OK ? "[green]UP[/]" : "[grey]DOWN[/]";
                         cells.Add(ipText);
                         cells.Add(statusText);

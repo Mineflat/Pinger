@@ -7,7 +7,7 @@
         /// </summary>
         public static void OnPanic(string errorMessage = "")
         {
-            Console.WriteLine($"Usage:\n\t{AppDomain.CurrentDomain.FriendlyName}  [x.x.x.x/y (CIDR)] [--only_up (hides down hosts)] [MaxRowsPerBlock (as POSITIVE DIGIT, means table height)]\n");
+            Console.WriteLine($"Usage:\n\t{AppDomain.CurrentDomain.FriendlyName}  [x.x.x.x/y (CIDR)] [--only-up (hides down hosts)] [MaxRowsPerBlock (as POSITIVE DIGIT, means table height)] [--no-hostnames (hides hostnames in table)]\n");
             if (!string.IsNullOrEmpty(errorMessage)) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine($"Commom errors: {errorMessage}"); Console.ResetColor(); }
             Environment.Exit(1);
         }
@@ -20,19 +20,17 @@
             // Проверяем общее число аргументов
             if (args.Length < 1 || args.Length > 3)
                 OnPanic();
-
             // Первый аргумент — CIDR
             string cidr = args[0];
-
             // Значения по умолчанию
             bool onlyUP = false;
+            bool showHostnames = true;
             int maxRowsPerBlock = 30;
-
             // Разбираем остальные аргументы в любом порядке
             for (int i = 1; i < args.Length; i++)
             {
                 var a = args[i];
-                if (a.Equals("--only_up", StringComparison.OrdinalIgnoreCase))
+                if (a.Equals("--only-up", StringComparison.OrdinalIgnoreCase))
                 {
                     onlyUP = true;
                 }
@@ -40,16 +38,19 @@
                 {
                     maxRowsPerBlock = rows;
                 }
-                else
+                else if (a.Equals("--no-hostnames", StringComparison.OrdinalIgnoreCase))
                 {
+                    showHostnames = false;
+                }
+                else
+                        {
                     OnPanic($"Unknown or invalid argument: {a}");
                 }
             }
-
             // Делаем сам пинг
             var hostList = await Pinger.UpdateHostList(cidr, timeoutMs: 1000);
             // Рендерим таблицу
-            ScreenRenderer.RenderScreen(hostList, onlyUP, maxRowsPerBlock);
+            ScreenRenderer.RenderScreen(hostList, onlyUP, maxRowsPerBlock, showHostnames);
         }
     }
 }
